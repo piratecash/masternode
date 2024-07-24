@@ -14,7 +14,7 @@
     ```bash
     bls generate
     ```
-    Insert the `secret` value into `masternodeblsprivkey=xxx` in the file `/opt/node/piratecash/piratecash.conf`.
+    Insert the `secret` value into `masternodeblsprivkey=xxx` in the file `/home/pirate/.piratecore/piratecash.conf`. (in docker)
 
 7. **Run the script** `./install_masternode.sh` for automatic setup.
 

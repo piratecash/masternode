@@ -6,7 +6,7 @@ services:
     command: /opt/start.sh
     build: piratecash-main
     container_name: pirate
-#    volumes:
-#      - /opt/node/piratecash:/home/pirate/.piratecore/
+    volumes:
+      - /opt/node/piratecash:/home/pirate/.piratecore/
     ports:
       - 63636:63636

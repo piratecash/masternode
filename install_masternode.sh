@@ -1,4 +1,9 @@
 #!/bin/bash
+BLOCKS_NAME="piratecash-blocks-22.07.2024.tar.bz2"
+BLOCKS_URL="https://github.com/piratecash/piratecash/releases/download/v18.2.2/$BLOCKS_NAME"
+
+original_dir=$(pwd)
+
 ufw disable
 
 ###### FIREWALL
@@ -30,23 +35,32 @@ apt-get -y install docker-compose
 #
 #
 mkdir -p /opt/node/piratecash
-chown -R 1001:1001 /opt/node/
+cp -f piratecash-main/piratecash.conf /opt/node/piratecash/
 
 # SET UP HOST IP
 ip_address=$(hostname -I | awk '{print $1}')
-sed -i "s/^#externalip=.*/externalip=$ip_address/" piratecash-main/piratecash.conf
+sed -i "s/^#externalip=.*/externalip=$ip_address/" /opt/node/piratecash/piratecash.conf
 
 # Generate a random username and password
 USERNAME=$(openssl rand -base64 12 | tr -d '/+=' | cut -c1-12)
 PASSWORD=$(openssl rand -base64 12 | tr -d '/+=' | cut -c1-16)
 
 # Update the configuration file with the new username and password
-sed -i "s/^#rpcuser=.*/rpcuser=$USERNAME/" piratecash-main/piratecash.conf
-sed -i "s/^#rpcpassword=.*/rpcpassword=$PASSWORD/" piratecash-main/piratecash.conf
+sed -i "s/^#rpcuser=.*/rpcuser=$USERNAME/" /opt/node/piratecash/piratecash.conf
+sed -i "s/^#rpcpassword=.*/rpcpassword=$PASSWORD/" /opt/node/piratecash/piratecash.conf
 
-cp piratecash-main/piratecash.conf /opt/node/piratecash/
+###### DOWNLOADING BLOCKS
+#
+#
+cd /opt/node/piratecash
+wget $BLOCKS_URL
+bzip2 -dc $BLOCKS_NAME | tar -x
+rm -f $BLOCKS_NAME
+
+chown -R 1001:1001 /opt/node/
 
 ###### DEPLOY
 #
 #
+cd $original_dir
 docker compose up --build -d

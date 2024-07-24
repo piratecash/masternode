@@ -3,8 +3,6 @@ FROM ubuntu
 ARG VERSION="18.2.2"
 ARG DAEMON_FILE="piratecashcore-${VERSION}-x86_64-pc-linux-gnu.tar.bz2"
 ARG DAEMON_URL="https://github.com/piratecash/piratecash/releases/download/v${VERSION}/${DAEMON_FILE}"
-ARG BLOCKS_NAME="piratecash-blocks-22.07.2024.tar.bz2"
-ARG BLOCKS_URL="https://github.com/piratecash/piratecash/releases/download/v18.2.2/${BLOCKS_NAME}"
 
 # install dependencies
 RUN apt update \
@@ -32,14 +30,6 @@ RUN mkdir -p /home/pirate/.piratecore
 RUN mkdir -p /home/pirate/bin
 COPY crontab /tmp/crontab
 RUN crontab -u pirate /tmp/crontab
-
-COPY piratecash.conf /home/pirate/.piratecore/piratecash.conf
-
-# Download blocks from GITHUB
-WORKDIR /home/pirate/.piratecore
-RUN wget ${BLOCKS_URL} \
-    && bzip2 -dc ${BLOCKS_NAME} | tar -x \
-    && rm -f ${BLOCKS_NAME}
 
 USER root
 

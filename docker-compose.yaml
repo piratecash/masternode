@@ -1,0 +1,12 @@
+version: '3.7'
+
+services:
+  pirate:
+    restart: unless-stopped
+    command: /opt/start.sh
+    build: piratecash-main
+    container_name: pirate
+#    volumes:
+#      - /opt/node/piratecash:/home/pirate/.piratecore/
+    ports:
+      - 63636:63636

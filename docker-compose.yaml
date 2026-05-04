@@ -1,12 +1,34 @@
-version: '3.7'
-
 services:
+  corsa-node:
+    restart: unless-stopped
+    build:
+      context: https://github.com/piratecash/corsa.git#v0.42-alpha
+    container_name: corsa-node
+    environment:
+      CORSA_LISTEN_ADDRESS: "${CORSA_LISTEN_ADDRESS:-:64646}"
+      CORSA_BOOTSTRAP_PEERS: "${CORSA_BOOTSTRAP_PEERS:-65.108.204.190:64646}"
+      CORSA_RPC_HOST: "${CORSA_RPC_HOST:-0.0.0.0}"
+      CORSA_RPC_PORT: "${CORSA_RPC_PORT:-46464}"
+      CORSA_RPC_USERNAME: "${CORSA_RPC_USERNAME:-}"
+      CORSA_RPC_PASSWORD: "${CORSA_RPC_PASSWORD:-}"
+    volumes:
+      - corsa-data:/home/corsa/.corsacore
+    expose:
+      - 46464
+    ports:
+      - 64646:64646
+      - 63636:63636
+
   pirate:
     restart: unless-stopped
-    command: /opt/start.sh
+    command: /usr/local/bin/piratecashd
     build: piratecash-main
     container_name: pirate
+    depends_on:
+      - corsa-node
+    network_mode: service:corsa-node
     volumes:
       - /opt/node/piratecash:/home/pirate/.piratecore/
-    ports:
-      - 63636:63636
+
+volumes:
+  corsa-data:

@@ -1,7 +1,4 @@
 #!/bin/bash
-BLOCKS_NAME="piratecash-blocks-22.07.2024.tar.bz2"
-BLOCKS_URL="https://github.com/piratecash/piratecash/releases/download/v18.2.2/$BLOCKS_NAME"
-
 original_dir=$(pwd)
 
 ufw disable
@@ -44,18 +41,25 @@ sed -i "s/^#externalip=.*/externalip=$ip_address/" /opt/node/piratecash/pirateca
 # Generate a random username and password
 USERNAME=$(openssl rand -base64 12 | tr -d '/+=' | cut -c1-12)
 PASSWORD=$(openssl rand -base64 12 | tr -d '/+=' | cut -c1-16)
+CORSA_RPC_USERNAME=$(openssl rand -base64 12 | tr -d '/+=' | cut -c1-12)
+CORSA_RPC_PASSWORD=$(openssl rand -base64 12 | tr -d '/+=' | cut -c1-16)
 
 # Update the configuration file with the new username and password
 sed -i "s/^#rpcuser=.*/rpcuser=$USERNAME/" /opt/node/piratecash/piratecash.conf
 sed -i "s/^#rpcpassword=.*/rpcpassword=$PASSWORD/" /opt/node/piratecash/piratecash.conf
+sed -i "s/^#corsarpcuser=.*/corsarpcuser=$CORSA_RPC_USERNAME/" /opt/node/piratecash/piratecash.conf
+sed -i "s/^#corsarpcpassword=.*/corsarpcpassword=$CORSA_RPC_PASSWORD/" /opt/node/piratecash/piratecash.conf
 
-###### DOWNLOADING BLOCKS
-#
-#
-cd /opt/node/piratecash
-wget $BLOCKS_URL
-bzip2 -dc $BLOCKS_NAME | tar -x
-rm -f $BLOCKS_NAME
+umask 077
+{
+  printf 'CORSA_LISTEN_ADDRESS=:64646\n'
+  printf 'CORSA_BOOTSTRAP_PEERS=65.108.204.190:64646\n'
+  printf 'CORSA_RPC_HOST=0.0.0.0\n'
+  printf 'CORSA_RPC_PORT=46464\n'
+  printf 'CORSA_RPC_USERNAME=%s\n' "$CORSA_RPC_USERNAME"
+  printf 'CORSA_RPC_PASSWORD=%s\n' "$CORSA_RPC_PASSWORD"
+} > "$original_dir/.env"
+chmod 600 "$original_dir/.env"
 
 chown -R 1001:1001 /opt/node/
 

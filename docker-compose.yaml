@@ -2,7 +2,7 @@ services:
   corsa-node:
     restart: unless-stopped
     build:
-      context: https://github.com/piratecash/corsa.git#v0.42-alpha
+      context: https://github.com/piratecash/corsa.git#v0.43-alpha
     container_name: corsa-node
     environment:
       CORSA_LISTEN_ADDRESS: "${CORSA_LISTEN_ADDRESS:-:64646}"

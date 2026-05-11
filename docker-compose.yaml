@@ -1,4 +1,12 @@
 services:
+  netns:
+    image: k8s.gcr.io/pause:3.9
+    container_name: pirate-netns
+    restart: unless-stopped
+    ports:
+      - 64646:64646
+      - 63636:63636
+
   corsa-node:
     restart: unless-stopped
     build:
@@ -11,13 +19,9 @@ services:
       CORSA_RPC_PORT: "${CORSA_RPC_PORT:-46464}"
       CORSA_RPC_USERNAME: "${CORSA_RPC_USERNAME:-}"
       CORSA_RPC_PASSWORD: "${CORSA_RPC_PASSWORD:-}"
+    network_mode: service:netns
     volumes:
       - corsa-data:/home/corsa/.corsacore
-    expose:
-      - 46464
-    ports:
-      - 64646:64646
-      - 63636:63636
 
   pirate:
     restart: unless-stopped
@@ -26,7 +30,7 @@ services:
     container_name: pirate
     depends_on:
       - corsa-node
-    network_mode: service:corsa-node
+    network_mode: service:netns
     volumes:
       - /opt/node/piratecash:/home/pirate/.piratecore/
 

@@ -1,18 +1,20 @@
 FROM ubuntu
 
-ARG VERSION="23.1.7"
-ARG DAEMON_FILE="piratecashcore-${VERSION}-x86_64-pc-linux-gnu.tar.bz2"
+ARG VERSION="23.1.8"
+ARG DAEMON_FILE="piratecashcore-${VERSION}-x86_64-linux-gnu.tar.gz"
 ARG DAEMON_URL="https://github.com/piratecash/piratecash/releases/download/v${VERSION}-pirate/${DAEMON_FILE}"
 
 # install dependencies
 RUN apt update \
     && apt -y upgrade \
-    && apt install -y wget bzip2 zip unzip tar mc
+    && apt install -y wget zip unzip tar mc
 
 # download daemon
 RUN cd /usr/local/bin \
 	&& wget $DAEMON_URL \
-	&& bzip2 -dc $DAEMON_FILE | tar -x
+	&& tar -xf $DAEMON_FILE
+
+RUN mv /usr/local/bin/piratecashcore-$VERSION/bin/* /usr/local/bin
 
 RUN groupadd --gid 1001 pirate \
     && useradd --uid 1001 --gid pirate -ms /bin/bash pirate

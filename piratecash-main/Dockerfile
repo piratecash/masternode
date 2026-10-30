@@ -1,6 +1,6 @@
 FROM ubuntu
 
-ARG VERSION="23.1.8"
+ARG VERSION="23.1.9"
 ARG DAEMON_FILE="piratecashcore-${VERSION}-x86_64-linux-gnu.tar.gz"
 ARG DAEMON_URL="https://github.com/piratecash/piratecash/releases/download/v${VERSION}-pirate/${DAEMON_FILE}"
 
